@@ -32,8 +32,7 @@ class XAuthAvatarHelper
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
                 Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $photo);
             }
-            die();
-            return Image::make($photo);
+            return Image::make(Storage::disk('public')->get('avatars/'.md5($user->email).'_360.jpg'));
         } catch (\Exception $e) {
             $img = Image::canvas(360, 360, '#'.str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
             $img->text(substr($user->givenName, 0, 1).substr($user->surname, 0, 1), 180, 180, function ($font) {
