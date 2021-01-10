@@ -7,6 +7,12 @@ use vhmhv\Xauth\Commands\XauthCommand;
 
 class XauthServiceProvider extends ServiceProvider
 {
+    protected $listen = [
+        \SocialiteProviders\Manager\SocialiteWasCalled::class => [
+            'SocialiteProviders\Graph\GraphExtendSocialite@handle',
+        ],
+    ];
+
     public function boot()
     {
         $this->loadRoutesFrom(__DIR__ . '/login_routes.php');
