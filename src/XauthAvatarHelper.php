@@ -32,7 +32,7 @@ class XAuthAvatarHelper
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
                 Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $photo);
             }
-            return Image::make(Storage::disk('public')->get('avatars/'.md5($user->email).'_360.jpg'));
+            return Image::make($photo);
         } catch (\Exception $e) {
             $img = Image::canvas(360, 360, '#'.str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
             $img->text(substr($user->givenName, 0, 1).substr($user->surname, 0, 1), 180, 180, function ($font) {
@@ -60,27 +60,27 @@ class XAuthAvatarHelper
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_128.jpg', $img->__toString());
+        Storage::putFile('public/avatars/'.$userMailMD5.'_128.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(72, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_72.jpg', $img->__toString());
+        Storage::putFile('public/avatars/'.$userMailMD5.'_72.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(46, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_46.jpg', $img->__toString());
+        Storage::putFile('public/avatars/'.$userMailMD5.'_46.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(32, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_32.jpg', $img->__toString());
+        Storage::putFile('public/avatars/'.$userMailMD5.'_32.jpg', $img->__toString());
     }
 }
