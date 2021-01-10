@@ -1,0 +1,62 @@
+{
+    "name": "vhmhv/xauth",
+    "description": "xauth",
+    "keywords": [
+        "vhmhv",
+        "xauth"
+    ],
+    "homepage": "https://github.com/vhmhv/xauth",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Benedikt Hübschen",
+            "email": "b.huebschen@vhmhv.de",
+            "homepage": "https://www.hofmann-vratny.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "illuminate/contracts": "^8.0",
+        "intervention/image": "^2.5",
+        "laravel/socialite": "^5.1",
+        "laravel/ui": "^3.2",
+        "microsoft/microsoft-graph": "^1.25",
+        "socialiteproviders/microsoft-graph": "^4.1"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "vhmhv\\Xauth\\": "src",
+            "vhmhv\\Xauth\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "vhmhv\\Xauth\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "psalm": "vendor/bin/psalm",
+        "test": "vendor/bin/phpunit --colors=always",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "vhmhv\\Xauth\\XauthServiceProvider"
+            ],
+            "aliases": {
+                "Xauth": "vhmhv\\Xauth\\XauthFacade"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
