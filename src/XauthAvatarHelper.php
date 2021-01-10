@@ -29,8 +29,9 @@ class XAuthAvatarHelper
             $meta = $meta->getBody();
             $photo = $graph->createRequest('GET', '/me/photo/$value')->execute();
             $photo = $photo->getRawBody();
+            die($photo);
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
-                Storage::disk('public')->put('/avatars/'.md5($user->email).'_360.jpg', $photo);
+                Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $photo);
             }
             return Image::make($photo);
         } catch (\Exception $e) {
@@ -46,7 +47,7 @@ class XAuthAvatarHelper
                 $font->align('center');
                 $font->valign('middle');
             });
-            Storage::disk('public')->put('/avatars/'.md5($user->email).'_360.jpg', $img->__toString());
+            Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $img->__toString());
             return $img;
         }
     }
@@ -60,27 +61,27 @@ class XAuthAvatarHelper
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_128.jpg', $img->__toString());
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_128.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(72, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_72.jpg', $img->__toString());
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_72.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(46, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_46.jpg', $img->__toString());
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_46.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(32, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_32.jpg', $img->__toString());
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_32.jpg', $img->__toString());
     }
 }
