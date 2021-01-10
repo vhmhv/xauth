@@ -49,9 +49,6 @@ class XauthLoginController extends Controller
 
     public function xauthlogin(Request $request)
     {
-        if(!$request->hasSession()) {
-            $request->session()->regenerate();
-        }
         $this->setCustomSocialiteConfig();
         return view("redirect", ["uri" => Socialite::with('graph')->redirect()->getTargetUrl()]);
     }
