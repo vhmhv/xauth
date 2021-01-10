@@ -8,10 +8,11 @@
 
 namespace vhmhv\Xauth;
 
+use Intervention\Image\Image;
 use Microsoft\Graph\Graph;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManagerStatic as Image;
+use Intervention\Image\ImageManager;
 
 use function PHPUnit\Framework\directoryExists;
 
@@ -32,9 +33,11 @@ class XAuthAvatarHelper
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
                 Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $photo);
             }
-            return Image::make($photo);
+            $img = new ImageManager();
+            $i = $img->make(Storage::disk('public')->get('avatars/'.md5($user->email).'_360.jpg'));
+            return $i;
         } catch (\Exception $e) {
-            $img = Image::canvas(360, 360, '#'.str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
+            $img = ImageManager::canvas(360, 360, '#'.str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
             $img->text(substr($user->givenName, 0, 1).substr($user->surname, 0, 1), 180, 180, function ($font) {
                 if(file_exists(public_path('/fonts/Avenir Next LT Pro Demi.ttf'))) {
                     $font->file(public_path('/fonts/Avenir Next LT Pro Demi.ttf'));
@@ -46,12 +49,12 @@ class XAuthAvatarHelper
                 $font->align('center');
                 $font->valign('middle');
             });
-            Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $img->__toString());
+            Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', (string) $img->encode('jpg', 80));
             return $img;
         }
     }
 
-    public static function resizeAvatars($originalImage)
+    public static function resizeAvatars(Image $originalImage)
     {
         $userMailMD5 = md5(Auth::user()->email);
 
@@ -59,29 +62,28 @@ class XAuthAvatarHelper
         $img->resize(128, null, function ($constraint) {
             $constraint->aspectRatio();
         });
-        $img->sharpen(5);
-        die($img->__tostring());
-        Storage::putFile('public/avatars/'.$userMailMD5.'_128.jpg', $img->__toString());
+        $img = $img->sharpen(5);
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_128.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(72, null, function ($constraint) {
             $constraint->aspectRatio();
         });
-        $img->sharpen(5);
-        Storage::putFile('public/avatars/'.$userMailMD5.'_72.jpg', $img->__toString());
+        $img = $img->sharpen(5);
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_72.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(46, null, function ($constraint) {
             $constraint->aspectRatio();
         });
-        $img->sharpen(5);
-        Storage::putFile('public/avatars/'.$userMailMD5.'_46.jpg', $img->__toString());
+        $img = $img->sharpen(5);
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_46.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(32, null, function ($constraint) {
             $constraint->aspectRatio();
         });
-        $img->sharpen(5);
-        Storage::putFile('public/avatars/'.$userMailMD5.'_32.jpg', $img->__toString());
+        $img = $img->sharpen(5);
+        Storage::disk('public')->put('avatars/'.$userMailMD5.'_32.jpg', (string) $img->encode('jpg', 80));
     }
 }
