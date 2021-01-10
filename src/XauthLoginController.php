@@ -47,6 +47,11 @@ class XauthLoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    public function xauthlogin(Request $request)
+    {
+        return view("redirect", ["uri" => Socialite::with('graph')->redirect()->getTargetUrl()]);
+    }
+
     public function redirectToProvider(Request $request)
     {
 
