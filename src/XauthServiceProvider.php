@@ -26,11 +26,9 @@ class XauthServiceProvider extends ServiceProvider
                 __DIR__ . '/../resources/views' => base_path('resources/views/vendor/xauth'),
             ], 'views');
 
-            $migrationFileName = 'create_xauth_table.php';
+            $migrationFileName = 'extend_users_table.php';
             if (! $this->migrationFileExists($migrationFileName)) {
-                $this->publishes([
-                    __DIR__ . "/../database/migrations/{$migrationFileName}.stub" => database_path('migrations/' . date('Y_m_d_His', time()) . '_' . $migrationFileName),
-                ], 'migrations');
+                $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
             }
         }
 
