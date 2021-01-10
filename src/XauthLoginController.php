@@ -32,7 +32,7 @@ class XauthLoginController extends Controller
     {
         config([
             'services.graph.client_id' => config('xauth.graph.key'),
-            'services.graph.rclient_secret'=> config('xauth.graph.secret'),
+            'services.graph.client_secret'=> config('xauth.graph.secret'),
             'services.graph.redirect'=> env('APP_URL').'/login/graph/callback'
         ]);
     }
