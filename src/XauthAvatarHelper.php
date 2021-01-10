@@ -60,6 +60,7 @@ class XAuthAvatarHelper
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
+        die($img->__tostring());
         Storage::putFile('public/avatars/'.$userMailMD5.'_128.jpg', $img->__toString());
 
         $img = clone $originalImage;
