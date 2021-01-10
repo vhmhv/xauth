@@ -1,2 +1,2 @@
 Weiterleitung erfolgt...
-<meta http-equiv="refresh" content="0;url={{$url}}" />
+<meta http-equiv="refresh" content="0;url={{$uri}}" />
