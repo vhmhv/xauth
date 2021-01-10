@@ -25,11 +25,7 @@ class XauthServiceProvider extends ServiceProvider
                 ], 'migrations');
             }
 
-            $this->commands([
-                XauthCommand::class,
-            ]);
-
-            $this->loadRoutesFrom('login_routes.php');
+            $this->loadRoutesFrom(__DIR__ . '/login_routes.php');
 
         }
 
