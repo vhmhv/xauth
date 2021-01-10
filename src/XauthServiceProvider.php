@@ -9,6 +9,8 @@ class XauthServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        $this->loadRoutesFrom(__DIR__ . '/login_routes.php');
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/xauth.php' => config_path('xauth.php'),
@@ -24,9 +26,6 @@ class XauthServiceProvider extends ServiceProvider
                     __DIR__ . "/../database/migrations/{$migrationFileName}.stub" => database_path('migrations/' . date('Y_m_d_His', time()) . '_' . $migrationFileName),
                 ], 'migrations');
             }
-
-            $this->loadRoutesFrom(__DIR__ . '/login_routes.php');
-
         }
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'xauth');
