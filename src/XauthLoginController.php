@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace vhmhv\Xauth;
 
 use vhmhv\Xauth\XAuthAvatarHelper;
 use App\Http\Controllers\Controller;
