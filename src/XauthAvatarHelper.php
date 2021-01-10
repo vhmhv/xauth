@@ -19,8 +19,8 @@ class XAuthAvatarHelper
 {
     public static function createFromO365($user)
     {
-        if(!directoryExists(public_path('/img/avatars'))) {
-            mkdir(public_path('/img/avatars'), true);
+        if(!Storage::disk('public')->exists('avatars')) {
+            Storage::disk('public')->makeDirectory('avatars');
         }
         $graph = new Graph();
         $graph->setBaseUrl('https://graph.microsoft.com/')->setApiVersion('beta')->setAccessToken($user->token);
@@ -30,26 +30,29 @@ class XAuthAvatarHelper
             $photo = $graph->createRequest('GET', '/me/photo/$value')->execute();
             $photo = $photo->getRawBody();
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
-                file_put_contents(public_path('/img/avatars/'.md5($user->email).'_360.jpg'), $photo);
+                Storage::disk('public')->put('/avatars/'.md5($user->email).'_360.jpg', $photo);
             }
-
-            return Image::make(public_path('/img/avatars/'.md5($user->email).'_360.jpg'));
+            return Image::make($photo);
         } catch (\Exception $e) {
             $img = Image::canvas(360, 360, '#'.str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
             $img->text(substr($user->givenName, 0, 1).substr($user->surname, 0, 1), 180, 180, function ($font) {
+                if(file_exists(public_path('/fonts/Avenir Next LT Pro Demi.ttf'))) {
+                    $font->file(public_path('/fonts/Avenir Next LT Pro Demi.ttf'));
+                } else {
+                    $font->file('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf');
+                }
                 $font->size(180);
                 $font->color('#fff');
                 $font->align('center');
                 $font->valign('middle');
             });
-            $img->save(public_path('/img/avatars/'.md5($user->email).'_360.jpg'));
+            Storage::disk('public')->put('/avatars/'.md5($user->email).'_360.jpg', $img->__toString());
             return $img;
         }
     }
 
     public static function resizeAvatars($originalImage)
     {
-        $storagePrefix = public_path('/img/avatars');
         $userMailMD5 = md5(Auth::user()->email);
 
         $img = clone $originalImage;
@@ -57,27 +60,27 @@ class XAuthAvatarHelper
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        $img->save($storagePrefix.'/'.$userMailMD5.'_128.jpg');
+        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_128.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(72, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        $img->save($storagePrefix.'/'.$userMailMD5.'_72.jpg');
+        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_72.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(46, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        $img->save($storagePrefix.'/'.$userMailMD5.'_46.jpg');
+        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_46.jpg', $img->__toString());
 
         $img = clone $originalImage;
         $img->resize(32, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img->sharpen(5);
-        $img->save($storagePrefix.'/'.$userMailMD5.'_32.jpg');
+        Storage::disk('public')->put('/avatars/'.$userMailMD5.'_32.jpg', $img->__toString());
     }
 }
