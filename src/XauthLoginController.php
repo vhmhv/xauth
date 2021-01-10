@@ -49,6 +49,7 @@ class XauthLoginController extends Controller
 
     public function redirectToProvider(Request $request)
     {
+
         $this->setCustomSocialiteConfig();
         $this->storeRedirectURIIfSet($request);
         return Socialite::driver('graph')->redirect();
