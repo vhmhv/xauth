@@ -28,6 +28,15 @@ class XauthLoginController extends Controller
 
     public const REDIRECT_URI_SESSION_KEY = 'login-redirect-uri';
 
+    public function setCustomSocialiteConfig()
+    {
+        config([
+            'services.graph.client_id' => config('xauth.graph.key'),
+            'services.graph.rclient_secret'=> config('xauth.graph.secret'),
+            'services.graph.redirect'=> env('APP_URL').'/login/graph/callback'
+        ]);
+    }
+
     /**
      * Create a new controller instance.
      *
@@ -40,6 +49,7 @@ class XauthLoginController extends Controller
 
     public function redirectToProvider(Request $request)
     {
+        $this->setCustomSocialiteConfig();
         $this->storeRedirectURIIfSet($request);
         return Socialite::driver('graph')->redirect();
     }
@@ -65,6 +75,7 @@ class XauthLoginController extends Controller
      */
     public function handleProviderCallback()
     {
+        $this->setCustomSocialiteConfig();
         $user = Socialite::driver('graph')->user();
 
         if ($this->endsWith(strtolower($user->email), 'vhmhv.de') !== true) {
