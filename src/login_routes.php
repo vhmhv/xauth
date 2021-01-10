@@ -1,6 +1,6 @@
 <?php
-Route::post('logout', 'vhmhv\Xauth\XauthLoginController@logout')->name('logout');
-Route::get('logout', 'vhmhv\Xauth\XauthLoginController@logout')->name('logout');
+Route::post('logout', 'vhmhv\Xauth\XauthLoginController@logout')->middleware('auth')->name('logout');
+Route::get('logout', 'vhmhv\Xauth\XauthLoginController@logout')->middleware('auth')->name('logout');
 Route::get('login', 'vhmhv\Xauth\XauthLoginController@xauthlogin')->name('login');
 Route::post('login', 'vhmhv\Xauth\XauthLoginController@xauthlogin')->name('login');
 Route::get('login/office365', 'vhmhv\Xauth\XauthLoginController@xauthlogin')->name('login.office365');
