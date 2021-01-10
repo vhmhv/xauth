@@ -29,10 +29,10 @@ class XAuthAvatarHelper
             $meta = $meta->getBody();
             $photo = $graph->createRequest('GET', '/me/photo/$value')->execute();
             $photo = $photo->getRawBody();
-            die($photo);
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
                 Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $photo);
             }
+            die();
             return Image::make($photo);
         } catch (\Exception $e) {
             $img = Image::canvas(360, 360, '#'.str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
