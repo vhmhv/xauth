@@ -1,4 +1,5 @@
 <?php
+
 Route::post('logout', [vhmhv\Xauth\XAuthLoginController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('logout', [vhmhv\Xauth\XAuthLoginController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('login', [vhmhv\Xauth\XAuthLoginController::class, 'xauthLogin'])->name('login');

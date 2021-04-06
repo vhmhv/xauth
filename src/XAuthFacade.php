@@ -8,6 +8,6 @@ class XAuthFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'xauth';
+        return 'XAuth';
     }
 }
