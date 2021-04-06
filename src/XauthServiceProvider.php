@@ -3,9 +3,9 @@
 namespace vhmhv\Xauth;
 
 use Illuminate\Support\ServiceProvider;
-use vhmhv\Xauth\Commands\XauthCommand;
+use vhmhv\Xauth\Commands\XAuthCommand;
 
-class XauthServiceProvider extends ServiceProvider
+class XAuthServiceProvider extends ServiceProvider
 {
     protected $listen = [
         \SocialiteProviders\Manager\SocialiteWasCalled::class => [
@@ -27,7 +27,7 @@ class XauthServiceProvider extends ServiceProvider
             ], 'views');
 
             $migrationFileName = 'extend_users_table.php';
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         }
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'xauth');

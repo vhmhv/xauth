@@ -4,10 +4,7 @@ namespace vhmhv\Xauth;
 
 use Illuminate\Support\Facades\Facade;
 
-/**
- * @see \vhmhv\Xauth\Xauth
- */
-class XauthFacade extends Facade
+class XAuthFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {

@@ -4,7 +4,7 @@ namespace vhmhv\Xauth\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use vhmhv\Xauth\XauthServiceProvider;
+use vhmhv\Xauth\XAuthServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -13,14 +13,14 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'vhmhv\\Xauth\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'vhmhv\\Xauth\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            XauthServiceProvider::class,
+            XAuthServiceProvider::class,
         ];
     }
 

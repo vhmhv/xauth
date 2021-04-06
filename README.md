@@ -4,7 +4,6 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/vhmhv/xauth/run-tests?label=tests)](https://github.com/vhmhv/xauth/actions?query=workflow%3ATests+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/vhmhv/xauth.svg?style=flat-square)](https://packagist.org/packages/vhmhv/xauth)
 
-
 This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
 
 ## Support us
@@ -26,13 +25,14 @@ composer require vhmhv/xauth
 You can publish and run the migrations with:
 
 ```bash
-php artisan vendor:publish --provider="vhmhv\Xauth\XauthServiceProvider" --tag="migrations"
+php artisan vendor:publish --provider="vhmhv\Xauth\XAuthServiceProvider" --tag="migrations"
 php artisan migrate
 ```
 
 You can publish the config file with:
+
 ```bash
-php artisan vendor:publish --provider="vhmhv\Xauth\XauthServiceProvider" --tag="config"
+php artisan vendor:publish --provider="vhmhv\Xauth\XAuthServiceProvider" --tag="config"
 ```
 
 This is the contents of the published config file:
@@ -69,8 +69,8 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [Benedikt Hübschen](https://github.com/b.huebschen)
-- [All Contributors](../../contributors)
+-   [Benedikt Hübschen](https://github.com/b.huebschen)
+-   [All Contributors](../../contributors)
 
 ## License
 

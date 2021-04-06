@@ -2,6 +2,6 @@
 
 namespace vhmhv\Xauth;
 
-class Xauth
+class XAuth
 {
 }

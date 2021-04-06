@@ -50,10 +50,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "vhmhv\\Xauth\\XauthServiceProvider"
+                "vhmhv\\Xauth\\XAuthServiceProvider"
             ],
             "aliases": {
-                "Xauth": "vhmhv\\Xauth\\XauthFacade"
+                "Xauth": "vhmhv\\Xauth\\XAuthFacade"
             }
         }
     },

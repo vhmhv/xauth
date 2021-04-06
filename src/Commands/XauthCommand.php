@@ -4,7 +4,7 @@ namespace vhmhv\Xauth\Commands;
 
 use Illuminate\Console\Command;
 
-class XauthCommand extends Command
+class XAuthCommand extends Command
 {
     public $signature = 'xauth';
 

@@ -11,8 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Facades\Socialite;
 
-class XauthLoginController extends Controller
+class XAuthLoginController extends Controller
 {
+    use AuthenticatesUsers;
+
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -24,7 +26,6 @@ class XauthLoginController extends Controller
     |
      */
 
-    use AuthenticatesUsers;
 
     public const REDIRECT_URI_SESSION_KEY = 'login-redirect-uri';
 
@@ -32,8 +33,8 @@ class XauthLoginController extends Controller
     {
         config([
             'services.graph.client_id' => config('xauth.graph.key'),
-            'services.graph.client_secret'=> config('xauth.graph.secret'),
-            'services.graph.redirect'=> env('APP_URL').'/login/graph/callback'
+            'services.graph.client_secret' => config('xauth.graph.secret'),
+            'services.graph.redirect' => env('APP_URL') . '/login/graph/callback'
         ]);
     }
 
@@ -70,7 +71,7 @@ class XauthLoginController extends Controller
         }
     }
 
-    function AuthApiUser(Request $request)
+    public function authApiUser(Request $request)
     {
         $user = Auth::user();
         return ['name' => $user->name, 'email' => $user->email];
@@ -100,7 +101,7 @@ class XauthLoginController extends Controller
         $dbUser->auth_token = $user->token;
         $dbUser->save();
         Auth::login($dbUser, true);
-        XAuthAvatarHelper::resizeAvatars(XauthAvatarHelper::createFromO365($user));
+        XAuthAvatarHelper::resizeAvatars(XAuthAvatarHelper::createFromO365($user));
 
 
         return $this->redirectToSessionRedirectURIOrIntendedURI(config('xauth.uri.login-success'));

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by IntelliJ IDEA.
  * User: andreasvratny
@@ -18,9 +19,9 @@ use function PHPUnit\Framework\directoryExists;
 
 class XAuthAvatarHelper
 {
-    public static function createFromO365($user)
+    public static function createFromO365($user): Image
     {
-        if(!Storage::disk('public')->exists('avatars')) {
+        if (!Storage::disk('public')->exists('avatars')) {
             Storage::disk('public')->makeDirectory('avatars');
         }
         $graph = new Graph();
@@ -31,15 +32,15 @@ class XAuthAvatarHelper
             $photo = $graph->createRequest('GET', '/me/photo/$value')->execute();
             $photo = $photo->getRawBody();
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
-                Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', $photo);
+                Storage::disk('public')->put('avatars/' . md5($user->email) . '_360.jpg', $photo);
             }
             $img = new ImageManager();
-            $i = $img->make(Storage::disk('public')->get('avatars/'.md5($user->email).'_360.jpg'));
+            $i = $img->make(Storage::disk('public')->get('avatars/' . md5($user->email) . '_360.jpg'));
             return $i;
         } catch (\Exception $e) {
-            $img = ImageManager::canvas(360, 360, '#'.str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
-            $img->text(substr($user->givenName, 0, 1).substr($user->surname, 0, 1), 180, 180, function ($font) {
-                if(file_exists(public_path('/fonts/Avenir Next LT Pro Demi.ttf'))) {
+            $img = ImageManager::canvas(360, 360, '#' . str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
+            $img->text(substr($user->givenName, 0, 1) . substr($user->surname, 0, 1), 180, 180, function ($font) {
+                if (file_exists(public_path('/fonts/Avenir Next LT Pro Demi.ttf'))) {
                     $font->file(public_path('/fonts/Avenir Next LT Pro Demi.ttf'));
                 } else {
                     $font->file('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf');
@@ -49,12 +50,12 @@ class XAuthAvatarHelper
                 $font->align('center');
                 $font->valign('middle');
             });
-            Storage::disk('public')->put('avatars/'.md5($user->email).'_360.jpg', (string) $img->encode('jpg', 80));
+            Storage::disk('public')->put('avatars/' . md5($user->email) . '_360.jpg', (string) $img->encode('jpg', 80));
             return $img;
         }
     }
 
-    public static function resizeAvatars(Image $originalImage)
+    public static function resizeAvatars(Image $originalImage): void
     {
         $userMailMD5 = md5(Auth::user()->email);
 
@@ -63,27 +64,27 @@ class XAuthAvatarHelper
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_128.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_128.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(72, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_72.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_72.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(46, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_46.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_46.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(32, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/'.$userMailMD5.'_32.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_32.jpg', (string) $img->encode('jpg', 80));
     }
 }
