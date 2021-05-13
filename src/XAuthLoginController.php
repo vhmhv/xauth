@@ -85,7 +85,15 @@ class XAuthLoginController extends Controller
     public function handleProviderCallback()
     {
         $this->setCustomSocialiteConfig();
-        $user = Socialite::driver('graph')->user();
+        $user = null;
+        try {
+            $user = Socialite::driver('graph')->user();
+        } catch (\Throwable $th) {
+            // state, saved in the session cookie differs the state retreived from oauth2-provider
+            // maybe the cookie, used to store the session is bound to another domain?
+            // it looks like it's only happening locally.
+            $user = Socialite::driver('graph')->stateless()->user();
+        }
 
         if ($this->endsWith(strtolower($user->email), 'vhmhv.de') !== true) {
             abort(403);
