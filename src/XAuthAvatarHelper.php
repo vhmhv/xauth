@@ -38,8 +38,9 @@ class XAuthAvatarHelper
             $i = $img->make(Storage::disk('public')->get('avatars/' . md5($user->email) . '_360.jpg'));
             return $i;
         } catch (\Exception $e) {
-            $img = ImageManager::canvas(360, 360, '#' . str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
-            $img->text(substr($user->givenName, 0, 1) . substr($user->surname, 0, 1), 180, 180, function ($font) {
+            $img = new ImageManager();
+            $canvas = $img->canvas(360, 360, '#' . str_pad(dechex(rand(0x000000, 0xFFFFFF)), 6, 0, STR_PAD_LEFT));
+            $canvas->text(substr($user->givenName, 0, 1) . substr($user->surname, 0, 1), 180, 180, function ($font) {
                 if (file_exists(public_path('/fonts/Avenir Next LT Pro Demi.ttf'))) {
                     $font->file(public_path('/fonts/Avenir Next LT Pro Demi.ttf'));
                 } else {
@@ -50,7 +51,7 @@ class XAuthAvatarHelper
                 $font->align('center');
                 $font->valign('middle');
             });
-            Storage::disk('public')->put('avatars/' . md5($user->email) . '_360.jpg', (string) $img->encode('jpg', 80));
+            Storage::disk('public')->put('avatars/' . md5($user->email) . '_360.jpg', (string) $canvas->encode('jpg', 80));
             return $img;
         }
     }
