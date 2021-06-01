@@ -52,7 +52,7 @@ class XAuthAvatarHelper
                 $font->valign('middle');
             });
             Storage::disk('public')->put('avatars/' . md5($user->email) . '_360.jpg', (string) $canvas->encode('jpg', 80));
-            return $img;
+            return $canvas;
         }
     }
 
