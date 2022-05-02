@@ -25,7 +25,7 @@ class XAuthAvatarHelper
             Storage::disk('public')->makeDirectory('avatars');
         }
         $graph = new Graph();
-        $graph->setBaseUrl('https://graph.microsoft.com/')->setApiVersion('beta')->setAccessToken($user->token);
+        $graph->setAccessToken($user->token);
         try {
             $meta = $graph->createRequest('GET', '/me/photo')->execute();
             $meta = $meta->getBody();
