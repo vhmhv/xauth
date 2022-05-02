@@ -17,12 +17,12 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "illuminate/contracts": "^8.0",
-        "intervention/image": "^2.5",
-        "laravel/socialite": "^5.1",
-        "laravel/ui": "^3.2",
-        "microsoft/microsoft-graph": "^1.25",
-        "socialiteproviders/microsoft-graph": "^4.1"
+        "illuminate/contracts": "*",
+        "intervention/image": "^3.0",
+        "laravel/socialite": "^5.5.2",
+        "laravel/ui": "^3.4.5",
+        "microsoft/microsoft-graph": "^2.0",
+        "socialiteproviders/microsoft-graph": "^4.1.1"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",
