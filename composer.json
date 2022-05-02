@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "intervention/image": "^3.0",
+        "intervention/image": "^2.5",
         "laravel/socialite": "^5.5.2",
         "laravel/ui": "^3.4.5",
         "microsoft/microsoft-graph": "^2.0",
