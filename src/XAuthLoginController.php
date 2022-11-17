@@ -74,7 +74,7 @@ class XAuthLoginController extends Controller
     public function authApiUser(Request $request)
     {
         $user = Auth::user();
-        return ['name' => $user->name, 'email' => $user->email];
+        return ['first_name' => $user->first_name, 'last_name' => $user->last_name, 'email' => $user->email];
     }
 
     /**
@@ -98,19 +98,18 @@ class XAuthLoginController extends Controller
         if ($this->endsWith(strtolower($user->email), 'vhmhv.de') !== true) {
             abort(403);
         }
-
         $dbUser = User::where(['email' => $user->email])->first();
         if ($dbUser === null) {
             $dbUser = new User();
             $dbUser->email = $user->email;
-            $dbUser->name = $user->displayName;
+            $dbUser->first_name = $user->user['surname'];
+            $dbUser->last_name = $user->user['givenName'];
             $dbUser->password = md5($user->token); //Nur wegen null=false
         }
         $dbUser->auth_token = $user->token;
         $dbUser->save();
         Auth::login($dbUser, true);
-        XAuthAvatarHelper::resizeAvatars(XAuthAvatarHelper::createFromO365($user));
-
+        //XAuthAvatarHelper::resizeAvatars(XAuthAvatarHelper::createFromO365($user));
 
         return $this->redirectToSessionRedirectURIOrIntendedURI(config('xauth.uri.login-success'));
     }
@@ -129,10 +128,12 @@ class XAuthLoginController extends Controller
     {
         // intended url cannot be used because it cannot be set by the pwa (popup with login)
         $redirectUri = Session::pull(self::REDIRECT_URI_SESSION_KEY, null);
+        $user = auth()->user();
+        unset($user['auth_token']);
         if ($redirectUri && strpos($redirectUri, '/') == 0) {
-            return redirect($redirectUri);
+            return redirect($redirectUri, 302, ["X-Auth-User" => json_encode($user->toArray())]);
         }
-        return redirect()->intended($defaultURL);
+        return redirect()->intended($defaultURL, 302, ["X-Auth-User" => json_encode($user->toArray())]);
     }
 
     /**
