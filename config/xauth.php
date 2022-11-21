@@ -3,7 +3,8 @@
 return [
     "graph" => [
         "secret" => env('GRAPH_SECRET', 'INVALID SECRET'),
-        "key"    => env('GRAPH_KEY', 'INVALID KEY')
+        "key"    => env('GRAPH_KEY', 'INVALID KEY'),
+        'callback_url' => env('GRAPH_CALLBACK', env('APP_URL') . '/login/graph/callback')
     ],
     "uri" => [
         "login-success" => env('XAUTH_LOGIN_SUCCESS', '/'),

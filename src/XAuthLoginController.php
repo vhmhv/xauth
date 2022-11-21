@@ -34,7 +34,7 @@ class XAuthLoginController extends Controller
         config([
             'services.graph.client_id' => config('xauth.graph.key'),
             'services.graph.client_secret' => config('xauth.graph.secret'),
-            'services.graph.redirect' => env('APP_URL') . '/login/graph/callback'
+            'services.graph.redirect' => config('xauth.graph.callback_url')
         ]);
     }
 
