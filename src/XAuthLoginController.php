@@ -109,8 +109,9 @@ class XAuthLoginController extends Controller
         $dbUser->auth_token = $user->token;
         $dbUser->save();
         Auth::login($dbUser, true);
-        //XAuthAvatarHelper::resizeAvatars(XAuthAvatarHelper::createFromO365($user));
-
+        if (config('xauth.options.get_avatars', true)) {
+            XAuthAvatarHelper::resizeAvatars(XAuthAvatarHelper::createFromO365($user));
+        }
         return $this->redirectToSessionRedirectURIOrIntendedURI(config('xauth.uri.login-success'));
     }
 

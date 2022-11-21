@@ -21,8 +21,8 @@ class XAuthAvatarHelper
 {
     public static function createFromO365($user): Image
     {
-        if (!Storage::disk('public')->exists('avatars')) {
-            Storage::disk('public')->makeDirectory('avatars');
+        if (!Storage::disk(config('xauth.options.storage.disk', 'public'))->exists(config('xauth.options.storage.base_path', 'public') . '/avatars')) {
+            Storage::disk(config('xauth.options.storage.disk', 'public'))->makeDirectory(config('xauth.options.storage.base_path', 'public') . '/avatars');
         }
         $graph = new Graph();
         $graph->setAccessToken($user->token);
@@ -32,10 +32,10 @@ class XAuthAvatarHelper
             $photo = $graph->createRequest('GET', '/me/photo/$value')->execute();
             $photo = $photo->getRawBody();
             if ($meta['@odata.mediaContentType'] == 'image/jpeg') {
-                Storage::disk('public')->put('avatars/' . md5($user->email) . '_360.jpg', $photo);
+                Storage::disk(config('xauth.options.storage.disk', 'public'))->put(config('xauth.options.storage.base_path', 'public') . '/avatars/' . md5($user->email) . '_360.jpg', $photo);
             }
             $img = new ImageManager();
-            $i = $img->make(Storage::disk('public')->get('avatars/' . md5($user->email) . '_360.jpg'));
+            $i = $img->make(Storage::disk(config('xauth.options.storage.disk', 'public'))->get(config('xauth.options.storage.base_path', 'public') . '/avatars/' . md5($user->email) . '_360.jpg'));
             return $i;
         } catch (\Exception $e) {
             $img = new ImageManager();
@@ -44,14 +44,16 @@ class XAuthAvatarHelper
                 if (file_exists(public_path('/fonts/Avenir Next LT Pro Demi.ttf'))) {
                     $font->file(public_path('/fonts/Avenir Next LT Pro Demi.ttf'));
                 } else {
-                    $font->file('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf');
+                    if (file_exists('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf')) {
+                        $font->file('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf');
+                    }
                 }
                 $font->size(180);
                 $font->color('#fff');
                 $font->align('center');
                 $font->valign('middle');
             });
-            Storage::disk('public')->put('avatars/' . md5($user->email) . '_360.jpg', (string) $canvas->encode('jpg', 80));
+            Storage::disk(config('xauth.options.storage.disk', 'public'))->put(config('xauth.options.storage.base_path', 'public') . '/avatars/' . md5($user->email) . '_360.jpg', (string) $canvas->encode('jpg', 80));
             return $canvas;
         }
     }
@@ -65,27 +67,27 @@ class XAuthAvatarHelper
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_128.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk(config('xauth.options.storage.disk', 'public'))->put(config('xauth.options.storage.base_path', 'public') . '/avatars/' . $userMailMD5 . '_128.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(72, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_72.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk(config('xauth.options.storage.disk', 'public'))->put(config('xauth.options.storage.base_path', 'public') . '/avatars/' . $userMailMD5 . '_72.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(46, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_46.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk(config('xauth.options.storage.disk', 'public'))->put(config('xauth.options.storage.base_path', 'public') . '/avatars/' . $userMailMD5 . '_46.jpg', (string) $img->encode('jpg', 80));
 
         $img = clone $originalImage;
         $img->resize(32, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $img = $img->sharpen(5);
-        Storage::disk('public')->put('avatars/' . $userMailMD5 . '_32.jpg', (string) $img->encode('jpg', 80));
+        Storage::disk(config('xauth.options.storage.disk', 'public'))->put(config('xauth.options.storage.base_path', 'public') . '/avatars/' . $userMailMD5 . '_32.jpg', (string) $img->encode('jpg', 80));
     }
 }
