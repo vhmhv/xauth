@@ -8,7 +8,7 @@ class XAuthServiceProvider extends ServiceProvider
 {
     protected $listen = [
         \SocialiteProviders\Manager\SocialiteWasCalled::class => [
-            'SocialiteProviders\Graph\GraphExtendSocialite@handle',
+            \SocialiteProviders\Microsoft\MicrosoftExtendSocialite::class.'@handle',
         ],
     ];
 
