@@ -2,7 +2,6 @@
 
 namespace vhmhv\Xauth;
 
-use vhmhv\Xauth\XAuthAvatarHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -10,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class XAuthLoginController extends Controller
 {
@@ -26,17 +26,7 @@ class XAuthLoginController extends Controller
     |
      */
 
-
     public const REDIRECT_URI_SESSION_KEY = 'login-redirect-uri';
-
-    public function setCustomSocialiteConfig()
-    {
-        config([
-            'services.graph.client_id' => config('xauth.graph.key'),
-            'services.graph.client_secret' => config('xauth.graph.secret'),
-            'services.graph.redirect' => config('xauth.graph.callback_url')
-        ]);
-    }
 
     /**
      * Create a new controller instance.
@@ -48,30 +38,31 @@ class XAuthLoginController extends Controller
         $this->middleware(['guest', 'web'])->except('logout');
     }
 
-    public function xauthLogin(Request $request)
+    public function setCustomSocialiteConfig(): void
     {
-        $this->setCustomSocialiteConfig();
-        return view("xauth::redirect", ["uri" => Socialite::with('graph')->redirect()->getTargetUrl()]);
-        $this->redirectToProvider($request);
+        config(
+            [
+                'services.graph.client_id' => config('xauth.graph.key'),
+                'services.graph.client_secret' => config('xauth.graph.secret'),
+                'services.graph.redirect' => config('xauth.graph.callback_url'),
+            ]
+        );
     }
 
-    public function redirectToProvider(Request $request)
+    public function redirectToProvider(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
     {
-
         $this->setCustomSocialiteConfig();
         $this->storeRedirectURIIfSet($request);
         return Socialite::driver('graph')->redirect();
     }
 
-    private function storeRedirectURIIfSet(Request $request)
+    public function chooseMethod(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
     {
-        $redirectUri = $request->get('redirect_uri', null);
-        if ($redirectUri) {
-            Session::put(self::REDIRECT_URI_SESSION_KEY, $redirectUri);
-        }
+        $this->storeRedirectURIIfSet($request);
+        return redirect(config('xauth.uri.login-choosemethod'));
     }
 
-    public function authApiUser(Request $request)
+    public function authApiUser(): array
     {
         $user = Auth::user();
         return ['first_name' => $user->first_name, 'last_name' => $user->last_name, 'email' => $user->email];
@@ -79,10 +70,8 @@ class XAuthLoginController extends Controller
 
     /**
      * Obtain the user information from Office365.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function handleProviderCallback()
+    public function handleProviderCallback(): \Illuminate\Http\RedirectResponse
     {
         $this->setCustomSocialiteConfig();
         $user = null;
@@ -105,6 +94,7 @@ class XAuthLoginController extends Controller
             $dbUser->first_name = $user->user['surname'];
             $dbUser->last_name = $user->user['givenName'];
             $dbUser->password = md5($user->token); //Nur wegen null=false
+            $dbUser->qr_login = 'HVAUTH_' . md5(md5($user->email));
         }
         $dbUser->auth_token = $user->token;
         $dbUser->save();
@@ -115,46 +105,71 @@ class XAuthLoginController extends Controller
         return $this->redirectToSessionRedirectURIOrIntendedURI(config('xauth.uri.login-success'));
     }
 
-    private function endsWith($haystack, $needle)
+    public function qrLogin(): \Illuminate\Http\RedirectResponse
+    {
+        return redirect(config('xauth.uri.login-choosemethod'));
+    }
+
+    public function loginByQR(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $requestData = null;
+        try {
+            $requestData = json_decode($request->getContent());
+        } catch (\Throwable $th) {
+            abort(406);
+        }
+        $dbUser = User::where('qr_login', $requestData->qr_login)->firstOr(function()
+        {
+            throw new HttpException(403);
+        });
+        Auth::login($dbUser, true);
+        return $this->redirectToSessionRedirectURIOrIntendedURI(config('xauth.uri.login-success'));
+}
+
+    public static function getRedirectToLoginWithCurrentURI(bool $urlOnly = false): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    {
+        $url = route('login', ['redirect_uri' => request()->getRequestUri()]);
+        if ($urlOnly) {
+            return $url;
+        }
+        return redirect($url);
+    }
+
+    /**
+     * The user has logged out of the application.
+     */
+    protected function loggedOut(): mixed
+    {
+        return redirect()->route('login');
+    }
+
+    private function endsWith(string $haystack, string $needle): bool
     {
         $length = strlen($needle);
-        if ($length == 0) {
+        if ($length === 0) {
             return true;
         }
 
         return substr($haystack, -$length) === $needle;
     }
 
-    private function redirectToSessionRedirectURIOrIntendedURI($defaultURL)
+    private function redirectToSessionRedirectURIOrIntendedURI(string $defaultURL = ''): \Illuminate\Http\RedirectResponse
     {
         // intended url cannot be used because it cannot be set by the pwa (popup with login)
         $redirectUri = Session::pull(self::REDIRECT_URI_SESSION_KEY, null);
         $user = auth()->user();
         unset($user['auth_token']);
-        if ($redirectUri && strpos($redirectUri, '/') == 0) {
-            return redirect($redirectUri, 302, ["X-Auth-User" => json_encode($user->toArray())]);
+        if ($redirectUri && strpos($redirectUri, '/') === 0) {
+            return redirect($redirectUri, 302, ['X-Auth-User' => json_encode($user->toArray())]);
         }
-        return redirect()->intended($defaultURL, 302, ["X-Auth-User" => json_encode($user->toArray())]);
+        return redirect()->intended($defaultURL, 302, ['X-Auth-User' => json_encode($user->toArray())]);
     }
 
-    /**
-     * The user has logged out of the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
-     */
-    protected function loggedOut(Request $request)
+    private function storeRedirectURIIfSet(Request $request): void
     {
-        return redirect()->route('login');
-    }
-
-    public static function getRedirectToLoginWithCurrentURI($urlOnly = false)
-    {
-        $url = route('login', ['redirect_uri' => request()->getRequestUri()]);
-        if ($urlOnly) {
-            return $url;
-        } else {
-            return redirect($url);
+        $redirectUri = $request->get('redirect_uri', null);
+        if ($redirectUri) {
+            Session::put(self::REDIRECT_URI_SESSION_KEY, $redirectUri);
         }
     }
 }
