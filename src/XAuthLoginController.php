@@ -42,9 +42,9 @@ class XAuthLoginController extends Controller
     {
         config(
             [
-                'services.graph.client_id' => config('xauth.graph.key'),
-                'services.graph.client_secret' => config('xauth.graph.secret'),
-                'services.graph.redirect' => config('xauth.graph.callback_url'),
+                'services.microsoft.client_id' => config('xauth.graph.key'),
+                'services.microsoft.client_secret' => config('xauth.graph.secret'),
+                'services.microsoft.redirect' => config('xauth.graph.callback_url'),
             ]
         );
     }
@@ -53,7 +53,7 @@ class XAuthLoginController extends Controller
     {
         $this->setCustomSocialiteConfig();
         $this->storeRedirectURIIfSet($request);
-        return Socialite::driver('graph')->redirect();
+        return Socialite::driver('microsoft')->redirect();
     }
 
     public function chooseMethod(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
@@ -76,12 +76,12 @@ class XAuthLoginController extends Controller
         $this->setCustomSocialiteConfig();
         $user = null;
         try {
-            $user = Socialite::driver('graph')->user();
+            $user = Socialite::driver('microsoft')->user();
         } catch (\Throwable $th) {
             // state, saved in the session cookie differs the state retreived from oauth2-provider
             // maybe the cookie, used to store the session is bound to another domain?
             // it looks like it's only happening locally.
-            $user = Socialite::driver('graph')->stateless()->user();
+            $user = Socialite::driver('microsoft')->stateless()->user();
         }
 
         if ($this->endsWith(strtolower($user->email), 'vhmhv.de') !== true) {
