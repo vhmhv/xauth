@@ -45,6 +45,9 @@ class XAuthLoginController extends Controller
                 'services.microsoft.client_id' => config('xauth.graph.key'),
                 'services.microsoft.client_secret' => config('xauth.graph.secret'),
                 'services.microsoft.redirect' => config('xauth.graph.callback_url'),
+                'services.apple.client_id' => config('xauth.apple.key'),
+                'services.apple.client_secret' => config('xauth.apple.secret'),
+                'services.apple.redirect' => config('xauth.apple.callback_url'),
             ]
         );
     }
@@ -54,6 +57,13 @@ class XAuthLoginController extends Controller
         $this->setCustomSocialiteConfig();
         $this->storeRedirectURIIfSet($request);
         return Socialite::driver('microsoft')->redirect();
+    }
+
+    public function redirectToApple(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
+    {
+        $this->setCustomSocialiteConfig();
+        $this->storeRedirectURIIfSet($request);
+        return Socialite::driver('apple')->redirect();
     }
 
     public function chooseMethod(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
@@ -102,6 +112,46 @@ class XAuthLoginController extends Controller
         if (config('xauth.options.get_avatars', true)) {
             XAuthAvatarHelper::resizeAvatars(XAuthAvatarHelper::createFromO365($user));
         }
+        return $this->redirectToSessionRedirectURIOrIntendedURI(config('xauth.uri.login-success'));
+    }
+
+    /**
+     * Obtain the user information from Office365.
+     */
+    public function handleAppleCallback(): \Illuminate\Http\RedirectResponse
+    {
+        $this->setCustomSocialiteConfig();
+        $user = null;
+        try {
+            $user = Socialite::driver('apple')->user();
+        } catch (\Throwable $th) {
+            // state, saved in the session cookie differs the state retreived from oauth2-provider
+            // maybe the cookie, used to store the session is bound to another domain?
+            // it looks like it's only happening locally.
+            $user = Socialite::driver('apple')->stateless()->user();
+        }
+
+        if ($this->endsWith(strtolower($user->email), 'vhmhv.de') === true) {
+            $dbUser = User::where(['email' => $user->email])->first();
+            if($dbUser === null) {
+                $dbUser = new User();
+                $dbUser->email = $user->email;
+                $firstName = trim(substr($user->name, 0, strrpos($user->name, ' ')));
+                $lastName = trim(substr($user->name, strrpos($user->name, ' ')));
+                $dbUser->first_name = $firstName;
+                $dbUser->last_name = $lastName;
+                $dbUser->password = md5($user->token); //Nur wegen null=false
+                $dbUser->apple_id = $user->id;
+            }
+        } else {
+            $dbUser = User::where(['apple_id' => $user->id])->first();
+            if ($dbUser === null) {
+                abort(403);
+            }
+        }
+        $dbUser->auth_token = $user->token;
+        $dbUser->save();
+        Auth::login($dbUser, true);
         return $this->redirectToSessionRedirectURIOrIntendedURI(config('xauth.uri.login-success'));
     }
 
