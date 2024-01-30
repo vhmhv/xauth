@@ -19,13 +19,10 @@
         "php": "^7.4|^8.0|^8.1|^8.2|8.3",
         "intervention/image": "*",
         "laravel/socialite": "^5.11",
+        "laravel/ui": "^4.4",
         "socialiteproviders/apple": "^5.6",
         "socialiteproviders/manager": "^4.4",
         "socialiteproviders/microsoft": "^4.2"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^6.0",
-        "phpunit/phpunit": "^9.3"
     },
     "autoload": {
         "psr-4": {
