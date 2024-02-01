@@ -165,6 +165,10 @@ class XAuthLoginController extends Controller
         $requestData = null;
         try {
             $requestData = json_decode($request->getContent());
+            if (json_last_error() != JSON_ERROR_NONE) {
+                $requestData = json_decode(json_encode($request->post()));
+            }
+            if($requestData == null) throw new HttpException(412);
         } catch (\Throwable $th) {
             abort(406);
         }
