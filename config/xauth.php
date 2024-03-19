@@ -6,7 +6,7 @@ return [
         'key' => env('GRAPH_KEY', 'INVALID KEY'),
         'callback_url' => env('GRAPH_CALLBACK', env('APP_URL') . '/login/graph/callback'),
         'tenant_id' => env('GRAPH_TENANT_ID', 'common'),
-        'include_tenant_info' => env('GRAPH_INCLUDE_TENANT_INFO', false),
+        'include_tenant_info' => env('GRAPH_INCLUDE_TENANT_INFO', true),
     ],
     'uri' => [
         'login-success' => env('XAUTH_LOGIN_SUCCESS', '/'),
