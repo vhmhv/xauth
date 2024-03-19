@@ -5,7 +5,7 @@ return [
         'secret' => env('GRAPH_SECRET', 'INVALID SECRET'),
         'key' => env('GRAPH_KEY', 'INVALID KEY'),
         'callback_url' => env('GRAPH_CALLBACK', env('APP_URL') . '/login/graph/callback'),
-        'tenant_id' => env('GRAPH_TENANT_ID', 'common'),
+        'tenant_id' => env('GRAPH_TENANT_ID', '35578d76-2cd7-4b88-8150-1ca2fddb6de5'),
         'include_tenant_info' => env('GRAPH_INCLUDE_TENANT_INFO', true),
     ],
     'uri' => [

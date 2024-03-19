@@ -45,7 +45,7 @@ class XAuthLoginController extends Controller
                 'services.microsoft.client_id' => config('xauth.graph.key'),
                 'services.microsoft.client_secret' => config('xauth.graph.secret'),
                 'services.microsoft.redirect' => config('xauth.graph.callback_url'),
-                'services.microsoft.tenant_id' => config('xauth.graph.tenant_id'),
+                'services.microsoft.tenant' => config('xauth.graph.tenant_id'),
                 'services.microsoft.include_tenant_info' => config('xauth.graph.include_tenant_info'),
                 'services.apple.client_id' => config('xauth.apple.key'),
                 'services.apple.client_secret' => config('xauth.apple.secret'),
